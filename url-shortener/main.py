@@ -118,3 +118,11 @@ MOVIES = [
         duration=153,
     ),
 ]
+
+
+@app.get(
+    "/movies/",
+    response_model=list[Movie],
+)
+def read_movies_list():
+    return MOVIES
