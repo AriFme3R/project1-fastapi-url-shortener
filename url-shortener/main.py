@@ -126,3 +126,31 @@ MOVIES = [
 )
 def read_movies_list():
     return MOVIES
+
+
+def prefetch_movie(
+    movie_id: int,
+) -> Movie:
+    movie_details: Movie | None = next(
+        (movie for movie in MOVIES if movie.id == movie_id),
+        None,
+    )
+    if movie_details:
+        return movie_details
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Movie {movie_id!r} not found",
+    )
+
+
+@app.get(
+    "/movie/{movie_id}/",
+    response_model=Movie,
+)
+def read_movie_details(
+    movie_details: Annotated[
+        Movie,
+        Depends(prefetch_movie),
+    ],
+) -> Movie:
+    return movie_details
