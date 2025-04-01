@@ -1,4 +1,7 @@
-from fastapi import FastAPI
+from fastapi import (
+    FastAPI,
+    Request,
+)
 
 
 app = FastAPI(
@@ -6,4 +9,16 @@ app = FastAPI(
 )
 
 
-
+@app.get("/")
+def read_root(
+    request: Request,
+    name: str = "World",
+):
+    docs_url = request.url.replace(
+        path="/docs",
+        query="",
+    )
+    return {
+        "Message": f"Hello, {name}!",
+        "docs": str(docs_url),
+    }
