@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 class MovieBase(BaseModel):
-    id: int | None = None
+    slug: str | None = None
     title: str
     description: str
     year: int
