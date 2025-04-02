@@ -36,11 +36,7 @@ def create_movie(
     movie_create: MovieCreate,
 ):
     return Movie(
-        id=randint(4, 100),
-        title=movie_create.title,
-        description=movie_create.description,
-        year=movie_create.year,
-        duration=movie_create.duration,
+        **movie_create.model_dump(),
     )
 
 
