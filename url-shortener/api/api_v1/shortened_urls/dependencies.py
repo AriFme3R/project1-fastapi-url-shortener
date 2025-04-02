@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from starlette import status
+from fastapi import status
 
 from .crud import SHORTENED_URLS
 from schemas.shortened_url import ShortenedUrl
