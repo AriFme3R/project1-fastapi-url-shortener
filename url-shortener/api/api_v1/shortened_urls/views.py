@@ -47,7 +47,7 @@ def create_shortened_url(
 ) -> ShortenedUrl:
     return ShortenedUrl(
         target_url=target_url,
-        slug="slug",
+        slug=slug,
     )
 
 
