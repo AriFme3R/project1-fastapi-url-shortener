@@ -11,7 +11,7 @@ from fastapi import (
 
 from .dependencies import prefetch_movie
 from .crud import MOVIES
-from schemas.movie import Movie
+from schemas.movie import Movie, MovieCreate
 
 router = APIRouter(
     prefix="/movies",
@@ -33,17 +33,14 @@ def read_movies_list():
     status_code=status.HTTP_201_CREATED,
 )
 def create_movie(
-    title: Annotated[str, Len(min_length=8, max_length=50), Form()],
-    description: Annotated[str, Form()],
-    year: Annotated[int, Form()],
-    duration: Annotated[int, Form()],
-) -> Movie:
+    movie_create: MovieCreate,
+):
     return Movie(
         id=randint(4, 100),
-        title=title,
-        description=description,
-        year=year,
-        duration=duration,
+        title=movie_create.title,
+        description=movie_create.description,
+        year=movie_create.year,
+        duration=movie_create.duration,
     )
 
 
