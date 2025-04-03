@@ -1,6 +1,4 @@
-from random import randint
 from typing import Annotated
-from annotated_types import Len
 
 from fastapi import (
     Depends,
@@ -9,7 +7,7 @@ from fastapi import (
 )
 
 from .dependencies import prefetch_movie
-from .crud import MOVIES
+from .crud import storage
 from schemas.movie import Movie, MovieCreate
 
 router = APIRouter(
@@ -22,8 +20,8 @@ router = APIRouter(
     "/",
     response_model=list[Movie],
 )
-def read_movies_list():
-    return MOVIES
+def read_movies_list() -> list[Movie]:
+    return storage.get()
 
 
 @router.post(
@@ -34,9 +32,7 @@ def read_movies_list():
 def create_movie(
     movie_create: MovieCreate,
 ):
-    return Movie(
-        **movie_create.model_dump(),
-    )
+    return storage.create(movie_create)
 
 
 @router.get(
