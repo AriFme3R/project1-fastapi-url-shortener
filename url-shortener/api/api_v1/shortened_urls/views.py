@@ -11,7 +11,7 @@ from schemas.shortened_url import (
     ShortenedUrlCreate,
 )
 
-from .crud import SHORTENED_URLS
+from .crud import storage
 from .dependencies import (
     prefetch_shortened_url,
 )
@@ -27,8 +27,8 @@ router = APIRouter(
     "/",
     response_model=list[ShortenedUrl],
 )
-def read_short_urls_list():
-    return SHORTENED_URLS
+def read_short_urls_list() -> list[ShortenedUrl]:
+    return storage.get()
 
 
 @router.post(
@@ -38,10 +38,8 @@ def read_short_urls_list():
 )
 def create_shortened_url(
     shortened_url_create: ShortenedUrlCreate,
-):
-    return ShortenedUrl(
-        **shortened_url_create.model_dump(),
-    )
+) -> ShortenedUrl:
+    return storage.create(shortened_url_create)
 
 
 @router.get(

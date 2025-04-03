@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import Depends, APIRouter
+from pydantic import AnyHttpUrl
 from starlette.responses import RedirectResponse
 
 from .api_v1.shortened_urls.dependencies import prefetch_shortened_url
@@ -22,5 +23,5 @@ def redirect_shortened_url(
     ],
 ):
     return RedirectResponse(
-        url=url.target_url,
+        url=str(url.target_url),
     )
