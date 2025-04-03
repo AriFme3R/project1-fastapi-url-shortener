@@ -6,7 +6,6 @@ from fastapi import (
     Depends,
     APIRouter,
     status,
-    Form,
 )
 
 from .dependencies import prefetch_movie
@@ -41,7 +40,7 @@ def create_movie(
 
 
 @router.get(
-    "/{movie_id}/",
+    "/{slug}/",
     response_model=Movie,
 )
 def read_movie_details(
