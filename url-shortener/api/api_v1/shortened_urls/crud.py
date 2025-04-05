@@ -4,6 +4,7 @@ from schemas.shortened_url import (
     ShortenedUrl,
     ShortenedUrlCreate,
     ShortenedUrlUpdate,
+    ShortenedUrlPartialUpdate,
 )
 
 
@@ -35,6 +36,17 @@ class ShortenedUrlsStorage(BaseModel):
         shortened_url_in: ShortenedUrlUpdate,
     ) -> ShortenedUrl:
         for field_name, value in shortened_url_in:
+            setattr(shortened_url, field_name, value)
+        return shortened_url
+
+    def update_partial(
+        self,
+        shortened_url: ShortenedUrl,
+        shortened_url_in: ShortenedUrlPartialUpdate,
+    ) -> ShortenedUrl:
+        for field_name, value in shortened_url_in.model_dump(
+            exclude_unset=True
+        ).items():
             setattr(shortened_url, field_name, value)
         return shortened_url
 
