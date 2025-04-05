@@ -3,6 +3,7 @@ from pydantic import AnyHttpUrl, BaseModel
 from schemas.shortened_url import (
     ShortenedUrl,
     ShortenedUrlCreate,
+    ShortenedUrlUpdate,
 )
 
 
@@ -27,6 +28,15 @@ class ShortenedUrlsStorage(BaseModel):
 
     def delete(self, shortened_url: ShortenedUrl) -> None:
         self.delete_by_slug(slug=shortened_url.slug)
+
+    def update(
+        self,
+        shortened_url: ShortenedUrl,
+        shortened_url_in: ShortenedUrlUpdate,
+    ) -> ShortenedUrl:
+        for field_name, value in shortened_url_in:
+            setattr(shortened_url, field_name, value)
+        return shortened_url
 
 
 storage = ShortenedUrlsStorage()
