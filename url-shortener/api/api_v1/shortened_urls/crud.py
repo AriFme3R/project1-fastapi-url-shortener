@@ -6,7 +6,7 @@ from schemas.shortened_url import (
 )
 
 
-class ShortenedUrlsShorage(BaseModel):
+class ShortenedUrlsStorage(BaseModel):
     slug_to_shortened_url: dict[str, ShortenedUrl] = {}
 
     def get(self) -> list[ShortenedUrl]:
@@ -22,8 +22,14 @@ class ShortenedUrlsShorage(BaseModel):
         self.slug_to_shortened_url[shortened_url.slug] = shortened_url
         return shortened_url
 
+    def delete_by_slug(self, slug: str) -> None:
+        self.slug_to_shortened_url.pop(slug, None)
 
-storage = ShortenedUrlsShorage()
+    def delete(self, shortened_url: ShortenedUrl) -> None:
+        self.delete_by_slug(slug=shortened_url.slug)
+
+
+storage = ShortenedUrlsStorage()
 
 storage.create(
     ShortenedUrlCreate(

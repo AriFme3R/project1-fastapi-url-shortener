@@ -53,3 +53,16 @@ def read_shortened_url_details(
     ],
 ) -> ShortenedUrl:
     return url
+
+
+@router.delete(
+    "/{slug}/",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_shortened_url(
+    url: Annotated[
+        ShortenedUrl,
+        Depends(prefetch_shortened_url),
+    ],
+) -> None:
+    storage.delete(shortened_url=url)
