@@ -28,6 +28,11 @@ class ShortenedUrlUpdate(ShortenedUrlBase):
     Модель для обновления информации о сокращённой ссылки
     """
 
+    description: Annotated[
+        str,
+        MaxLen(200),
+    ]
+
 
 class ShortenedUrl(ShortenedUrlBase):
     """
