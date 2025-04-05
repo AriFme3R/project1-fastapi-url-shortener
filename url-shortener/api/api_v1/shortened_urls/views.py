@@ -58,6 +58,18 @@ def read_shortened_url_details(
 @router.delete(
     "/{slug}/",
     status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Shortened URL not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "URL 'slug' not found",
+                    },
+                },
+            },
+        },
+    },
 )
 def delete_shortened_url(
     url: Annotated[
