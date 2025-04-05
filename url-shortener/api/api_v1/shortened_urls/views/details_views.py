@@ -8,6 +8,7 @@ from api.api_v1.shortened_urls.dependencies import prefetch_shortened_url
 from schemas.shortened_url import (
     ShortenedUrl,
     ShortenedUrlUpdate,
+    ShortenedUrlPartialUpdate,
 )
 
 router = APIRouter(
@@ -49,8 +50,22 @@ def read_shortened_url_details(
 def update_shortened_url_details(
     url: ShortenedUrlBySlug,
     shortened_url_in: ShortenedUrlUpdate,
-):
+) -> ShortenedUrl:
     return storage.update(
+        shortened_url=url,
+        shortened_url_in=shortened_url_in,
+    )
+
+
+@router.patch(
+    "/",
+    response_model=ShortenedUrl,
+)
+def update_shortened_url_details_partial(
+    url: ShortenedUrlBySlug,
+    shortened_url_in: ShortenedUrlPartialUpdate,
+) -> ShortenedUrl:
+    return storage.partial_update(
         shortened_url=url,
         shortened_url_in=shortened_url_in,
     )
