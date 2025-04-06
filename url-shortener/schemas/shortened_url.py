@@ -44,9 +44,18 @@ class ShortenedUrlPartialUpdate(ShortenedUrlBase):
     description: DescriptionString | None = None
 
 
+class ShortenedUrlRead(ShortenedUrlBase):
+    """
+    Модель для чтения данных по короткой ссылке
+    """
+
+    slug: str
+
+
 class ShortenedUrl(ShortenedUrlBase):
     """
     Модель сокращённой ссылки
     """
 
     slug: str
+    visits: int = 42
