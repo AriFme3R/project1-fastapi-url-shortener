@@ -1,5 +1,6 @@
-from pydantic import AnyHttpUrl, BaseModel
+from pydantic import BaseModel, ValidationError
 
+from core.config import SHORTENED_URLS_STORAGE_FILEPATH
 from schemas.shortened_url import (
     ShortenedUrl,
     ShortenedUrlCreate,
@@ -10,6 +11,15 @@ from schemas.shortened_url import (
 
 class ShortenedUrlsStorage(BaseModel):
     slug_to_shortened_url: dict[str, ShortenedUrl] = {}
+
+    def save_state(self) -> None:
+        SHORTENED_URLS_STORAGE_FILEPATH.write_text(self.model_dump_json(indent=2))
+
+    @classmethod
+    def from_state(cls):
+        if not SHORTENED_URLS_STORAGE_FILEPATH.exists():
+            return ShortenedUrlsStorage()
+        return cls.model_validate_json(SHORTENED_URLS_STORAGE_FILEPATH.read_text())
 
     def get(self) -> list[ShortenedUrl]:
         return list(self.slug_to_shortened_url.values())
@@ -22,10 +32,12 @@ class ShortenedUrlsStorage(BaseModel):
             **shortened_url.model_dump(),
         )
         self.slug_to_shortened_url[shortened_url.slug] = shortened_url
+        self.save_state()
         return shortened_url
 
     def delete_by_slug(self, slug: str) -> None:
         self.slug_to_shortened_url.pop(slug, None)
+        self.save_state()
 
     def delete(self, shortened_url: ShortenedUrl) -> None:
         self.delete_by_slug(slug=shortened_url.slug)
@@ -37,6 +49,7 @@ class ShortenedUrlsStorage(BaseModel):
     ) -> ShortenedUrl:
         for field_name, value in shortened_url_in:
             setattr(shortened_url, field_name, value)
+        self.save_state()
         return shortened_url
 
     def update_partial(
@@ -48,21 +61,12 @@ class ShortenedUrlsStorage(BaseModel):
             exclude_unset=True
         ).items():
             setattr(shortened_url, field_name, value)
+        self.save_state()
         return shortened_url
 
 
-storage = ShortenedUrlsStorage()
-
-storage.create(
-    ShortenedUrlCreate(
-        target_url=AnyHttpUrl("https://example.com"),
-        slug="example",
-    ),
-)
-
-storage.create(
-    ShortenedUrlCreate(
-        target_url=AnyHttpUrl("https://google.com"),
-        slug="search",
-    ),
-)
+try:
+    storage = ShortenedUrlsStorage.from_state()
+except ValidationError:
+    storage = ShortenedUrlsStorage()
+    storage.save_state()

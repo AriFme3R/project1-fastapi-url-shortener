@@ -154,3 +154,5 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+shortened_urls.json
