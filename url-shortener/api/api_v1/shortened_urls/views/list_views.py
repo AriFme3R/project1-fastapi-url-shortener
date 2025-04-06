@@ -6,6 +6,7 @@ from fastapi import (
 from schemas.shortened_url import (
     ShortenedUrl,
     ShortenedUrlCreate,
+    ShortenedUrlRead,
 )
 
 from api.api_v1.shortened_urls.crud import storage
@@ -18,7 +19,7 @@ router = APIRouter(
 
 @router.get(
     "/",
-    response_model=list[ShortenedUrl],
+    response_model=list[ShortenedUrlRead],
 )
 def read_short_urls_list() -> list[ShortenedUrl]:
     return storage.get()
@@ -26,7 +27,7 @@ def read_short_urls_list() -> list[ShortenedUrl]:
 
 @router.post(
     "/",
-    response_model=ShortenedUrlCreate,
+    response_model=ShortenedUrlRead,
     status_code=status.HTTP_201_CREATED,
 )
 def create_shortened_url(

@@ -9,6 +9,7 @@ from schemas.shortened_url import (
     ShortenedUrl,
     ShortenedUrlUpdate,
     ShortenedUrlPartialUpdate,
+    ShortenedUrlRead,
 )
 
 router = APIRouter(
@@ -35,7 +36,7 @@ ShortenedUrlBySlug = Annotated[
 
 @router.get(
     "/",
-    response_model=ShortenedUrl,
+    response_model=ShortenedUrlRead,
 )
 def read_shortened_url_details(
     url: ShortenedUrlBySlug,
@@ -45,7 +46,7 @@ def read_shortened_url_details(
 
 @router.put(
     "/",
-    response_model=ShortenedUrl,
+    response_model=ShortenedUrlRead,
 )
 def update_shortened_url_details(
     url: ShortenedUrlBySlug,
@@ -59,7 +60,7 @@ def update_shortened_url_details(
 
 @router.patch(
     "/",
-    response_model=ShortenedUrl,
+    response_model=ShortenedUrlRead,
 )
 def update_shortened_url_details_partial(
     url: ShortenedUrlBySlug,
