@@ -1,3 +1,5 @@
+import logging
+
 from pydantic import BaseModel, ValidationError
 
 from core.config import SHORTENED_URLS_STORAGE_FILEPATH
@@ -8,16 +10,20 @@ from schemas.shortened_url import (
     ShortenedUrlPartialUpdate,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class ShortenedUrlsStorage(BaseModel):
     slug_to_shortened_url: dict[str, ShortenedUrl] = {}
 
     def save_state(self) -> None:
         SHORTENED_URLS_STORAGE_FILEPATH.write_text(self.model_dump_json(indent=2))
+        logger.info("Saved shortened urls storage file.")
 
     @classmethod
     def from_state(cls):
         if not SHORTENED_URLS_STORAGE_FILEPATH.exists():
+            logger.info("Shortened urls storage file doesn't exist.")
             return ShortenedUrlsStorage()
         return cls.model_validate_json(SHORTENED_URLS_STORAGE_FILEPATH.read_text())
 
@@ -67,6 +73,8 @@ class ShortenedUrlsStorage(BaseModel):
 
 try:
     storage = ShortenedUrlsStorage.from_state()
+    logger.warning("Recovered data from storage file.")
 except ValidationError:
     storage = ShortenedUrlsStorage()
     storage.save_state()
+    logger.warning("Rewritten storage file.")
