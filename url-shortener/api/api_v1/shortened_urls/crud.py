@@ -51,6 +51,7 @@ class ShortenedUrlsStorage(BaseModel):
             **shortened_url.model_dump(),
         )
         self.slug_to_shortened_url[shortened_url.slug] = shortened_url
+        logger.info("Created shortened url")
         return shortened_url
 
     def delete_by_slug(self, slug: str) -> None:
