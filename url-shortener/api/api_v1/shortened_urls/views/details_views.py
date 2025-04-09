@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from starlette import status
 
 from api.api_v1.shortened_urls.crud import storage
@@ -51,7 +51,9 @@ def read_shortened_url_details(
 def update_shortened_url_details(
     url: ShortenedUrlBySlug,
     shortened_url_in: ShortenedUrlUpdate,
+    background_tasks: BackgroundTasks,
 ) -> ShortenedUrl:
+    background_tasks.add_task(storage.save_state)
     return storage.update(
         shortened_url=url,
         shortened_url_in=shortened_url_in,
@@ -65,7 +67,9 @@ def update_shortened_url_details(
 def update_shortened_url_details_partial(
     url: ShortenedUrlBySlug,
     shortened_url_in: ShortenedUrlPartialUpdate,
+    background_tasks: BackgroundTasks,
 ) -> ShortenedUrl:
+    background_tasks.add_task(storage.save_state)
     return storage.partial_update(
         shortened_url=url,
         shortened_url_in=shortened_url_in,
@@ -78,5 +82,7 @@ def update_shortened_url_details_partial(
 )
 def delete_shortened_url(
     url: ShortenedUrlBySlug,
+    background_tasks: BackgroundTasks,
 ) -> None:
+    background_tasks.add_task(storage.save_state)
     storage.delete(shortened_url=url)
