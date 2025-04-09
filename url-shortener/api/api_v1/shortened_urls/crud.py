@@ -27,6 +27,19 @@ class ShortenedUrlsStorage(BaseModel):
             return ShortenedUrlsStorage()
         return cls.model_validate_json(SHORTENED_URLS_STORAGE_FILEPATH.read_text())
 
+    def init_storage_from_state(self) -> None:
+        try:
+            data = ShortenedUrlsStorage.from_state()
+        except ValidationError:
+            self.save_state()
+            logger.warning("Rewritten storage file.")
+            return
+
+        self.slug_to_shortened_url.update(
+            data.slug_to_shortened_url,
+        )
+        logger.warning("Recovered data from storage file.")
+
     def get(self) -> list[ShortenedUrl]:
         return list(self.slug_to_shortened_url.values())
 
@@ -71,10 +84,4 @@ class ShortenedUrlsStorage(BaseModel):
         return shortened_url
 
 
-try:
-    storage = ShortenedUrlsStorage.from_state()
-    logger.warning("Recovered data from storage file.")
-except ValidationError:
-    storage = ShortenedUrlsStorage()
-    storage.save_state()
-    logger.warning("Rewritten storage file.")
+storage = ShortenedUrlsStorage()
