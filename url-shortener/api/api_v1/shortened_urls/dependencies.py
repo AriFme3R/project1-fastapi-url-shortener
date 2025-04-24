@@ -5,7 +5,7 @@ from fastapi import (
     HTTPException,
     BackgroundTasks,
     Request,
-    Query,
+    Header,
     status,
 )
 
@@ -54,7 +54,7 @@ def api_token_required(
     request: Request,
     api_token: Annotated[
         str,
-        Query(),
+        Header(alias="x-auth-token"),
     ] = "",
 ):
     if request.method not in UNSAFE_METHOD:
