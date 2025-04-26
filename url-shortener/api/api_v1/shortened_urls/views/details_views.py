@@ -68,7 +68,7 @@ def update_shortened_url_details_partial(
     url: ShortenedUrlBySlug,
     shortened_url_in: ShortenedUrlPartialUpdate,
 ) -> ShortenedUrl:
-    return storage.partial_update(
+    return storage.update_partial(
         shortened_url=url,
         shortened_url_in=shortened_url_in,
     )

@@ -7,6 +7,7 @@ from fastapi import (
 from api.api_v1.shortened_urls.dependencies import (
     save_storage_safe,
     api_token_required,
+    user_basic_auth_required_for_unsafe_methods,
 )
 from schemas.shortened_url import (
     ShortenedUrl,
@@ -21,7 +22,8 @@ router = APIRouter(
     tags=["Shortened_urls"],
     dependencies=[
         Depends(save_storage_safe),
-        Depends(api_token_required),
+        # Depends(api_token_required),
+        Depends(user_basic_auth_required_for_unsafe_methods),
     ],
     responses={
         status.HTTP_401_UNAUTHORIZED: {
@@ -53,6 +55,5 @@ def read_short_urls_list() -> list[ShortenedUrl]:
 )
 def create_shortened_url(
     shortened_url_create: ShortenedUrlCreate,
-    _=Depends(api_token_required),
 ) -> ShortenedUrl:
     return storage.create(shortened_url_create)
