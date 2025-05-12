@@ -6,8 +6,7 @@ from fastapi import (
 
 from api.api_v1.shortened_urls.dependencies import (
     save_storage_safe,
-    api_token_required,
-    user_basic_auth_required_for_unsafe_methods,
+    api_token_or_user_basic_auth_required_for_unsafe_methods,
 )
 from schemas.shortened_url import (
     ShortenedUrl,
@@ -22,8 +21,7 @@ router = APIRouter(
     tags=["Shortened_urls"],
     dependencies=[
         Depends(save_storage_safe),
-        # Depends(api_token_required),
-        Depends(user_basic_auth_required_for_unsafe_methods),
+        Depends(api_token_or_user_basic_auth_required_for_unsafe_methods),
     ],
     responses={
         status.HTTP_401_UNAUTHORIZED: {
@@ -31,7 +29,7 @@ router = APIRouter(
             "content": {
                 "application/json": {
                     "example": {
-                        "detail": "Invalid API token",
+                        "detail": "Invalid API token or basic auth.",
                     }
                 }
             },
