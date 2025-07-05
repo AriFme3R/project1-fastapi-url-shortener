@@ -1,7 +1,9 @@
 import logging
 
 from pydantic import BaseModel, ValidationError
+from redis import Redis
 
+from core import config
 from core.config import SHORTENED_URLS_STORAGE_FILEPATH
 from schemas.shortened_url import (
     ShortenedUrl,
@@ -11,6 +13,13 @@ from schemas.shortened_url import (
 )
 
 logger = logging.getLogger(__name__)
+
+redis = Redis(
+    host=config.REDIS_HOST,
+    port=config.REDIS_PORT,
+    db=config.REDIS_DB_SHORTENED_URLS,
+    decode_responses=True,
+)
 
 
 class ShortenedUrlsStorage(BaseModel):
@@ -50,8 +59,12 @@ class ShortenedUrlsStorage(BaseModel):
         shortened_url = ShortenedUrl(
             **shortened_url.model_dump(),
         )
-        self.slug_to_shortened_url[shortened_url.slug] = shortened_url
-        logger.info("Created shortened url")
+        redis.hset(
+            name=config.REDIS_SHORTENED_URLS_HASH_NAME,
+            key=shortened_url.slug,
+            value=shortened_url.model_dump_json(),
+        )
+        logger.info("Created shortened url %s", shortened_url)
         return shortened_url
 
     def delete_by_slug(self, slug: str) -> None:
