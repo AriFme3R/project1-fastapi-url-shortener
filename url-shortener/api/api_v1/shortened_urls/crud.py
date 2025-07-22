@@ -53,7 +53,13 @@ class ShortenedUrlsStorage(BaseModel):
         return list(self.slug_to_shortened_url.values())
 
     def get_by_slug(self, slug: str) -> ShortenedUrl | None:
-        return self.slug_to_shortened_url.get(slug)
+        data = redis.hget(
+            name=config.REDIS_SHORTENED_URLS_HASH_NAME,
+            key=slug,
+        )
+        if data:
+            return ShortenedUrl.model_validate_json(data)
+        return None
 
     def create(self, shortened_url: ShortenedUrlCreate) -> ShortenedUrl:
         shortened_url = ShortenedUrl(
