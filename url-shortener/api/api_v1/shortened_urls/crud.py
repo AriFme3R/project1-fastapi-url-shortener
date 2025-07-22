@@ -49,6 +49,13 @@ class ShortenedUrlsStorage(BaseModel):
         )
         logger.warning("Recovered data from storage file.")
 
+    def save_shortened_url(self, shortened_url: ShortenedUrl) -> None:
+        redis.hset(
+            name=config.REDIS_SHORTENED_URLS_HASH_NAME,
+            key=shortened_url.slug,
+            value=shortened_url.model_dump_json(),
+        )
+
     def get(self) -> list[ShortenedUrl]:
         data = redis.hvals(
             name=config.REDIS_SHORTENED_URLS_HASH_NAME,
@@ -68,11 +75,7 @@ class ShortenedUrlsStorage(BaseModel):
         shortened_url = ShortenedUrl(
             **shortened_url.model_dump(),
         )
-        redis.hset(
-            name=config.REDIS_SHORTENED_URLS_HASH_NAME,
-            key=shortened_url.slug,
-            value=shortened_url.model_dump_json(),
-        )
+        self.save_shortened_url(shortened_url)
         logger.info("Created shortened url %s", shortened_url)
         return shortened_url
 
@@ -89,6 +92,7 @@ class ShortenedUrlsStorage(BaseModel):
     ) -> ShortenedUrl:
         for field_name, value in shortened_url_in:
             setattr(shortened_url, field_name, value)
+        self.save_shortened_url(shortened_url)
         return shortened_url
 
     def update_partial(
@@ -100,6 +104,7 @@ class ShortenedUrlsStorage(BaseModel):
             exclude_unset=True
         ).items():
             setattr(shortened_url, field_name, value)
+        self.save_shortened_url(shortened_url)
         return shortened_url
 
 
