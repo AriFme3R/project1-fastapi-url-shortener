@@ -80,7 +80,10 @@ class ShortenedUrlsStorage(BaseModel):
         return shortened_url
 
     def delete_by_slug(self, slug: str) -> None:
-        self.slug_to_shortened_url.pop(slug, None)
+        redis.hdel(
+            config.REDIS_SHORTENED_URLS_HASH_NAME,
+            slug,
+        )
 
     def delete(self, shortened_url: ShortenedUrl) -> None:
         self.delete_by_slug(slug=shortened_url.slug)
