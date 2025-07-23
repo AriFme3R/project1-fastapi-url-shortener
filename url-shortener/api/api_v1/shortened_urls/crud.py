@@ -23,31 +23,6 @@ redis = Redis(
 
 
 class ShortenedUrlsStorage(BaseModel):
-    slug_to_shortened_url: dict[str, ShortenedUrl] = {}
-
-    def save_state(self) -> None:
-        SHORTENED_URLS_STORAGE_FILEPATH.write_text(self.model_dump_json(indent=2))
-        logger.info("Saved shortened urls storage file.")
-
-    @classmethod
-    def from_state(cls):
-        if not SHORTENED_URLS_STORAGE_FILEPATH.exists():
-            logger.info("Shortened urls storage file doesn't exist.")
-            return ShortenedUrlsStorage()
-        return cls.model_validate_json(SHORTENED_URLS_STORAGE_FILEPATH.read_text())
-
-    def init_storage_from_state(self) -> None:
-        try:
-            data = ShortenedUrlsStorage.from_state()
-        except ValidationError:
-            self.save_state()
-            logger.warning("Rewritten storage file.")
-            return
-
-        self.slug_to_shortened_url.update(
-            data.slug_to_shortened_url,
-        )
-        logger.warning("Recovered data from storage file.")
 
     def save_shortened_url(self, shortened_url: ShortenedUrl) -> None:
         redis.hset(
