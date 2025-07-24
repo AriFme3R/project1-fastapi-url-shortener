@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter,
     status,
     Depends,
+    HTTPException,
 )
 
 from api.api_v1.shortened_urls.dependencies import (
@@ -48,8 +49,26 @@ def read_short_urls_list() -> list[ShortenedUrl]:
     "/",
     response_model=ShortenedUrlRead,
     status_code=status.HTTP_201_CREATED,
+    responses={
+        status.HTTP_409_CONFLICT: {
+            "description": "It is not possible to overwrite an existing record.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Shortened URL with slug='name' already exists",
+                    }
+                }
+            },
+        },
+    },
 )
 def create_shortened_url(
     shortened_url_create: ShortenedUrlCreate,
 ) -> ShortenedUrl:
-    return storage.create(shortened_url_create)
+    if not storage.get_by_slug(shortened_url_create.slug):
+        return storage.create(shortened_url_create)
+
+    raise HTTPException(
+        status_code=status.HTTP_409_CONFLICT,
+        detail=f"Shortened URL with slug={shortened_url_create.slug!r} already exists",
+    )
