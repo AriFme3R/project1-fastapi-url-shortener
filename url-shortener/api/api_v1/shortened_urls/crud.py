@@ -22,6 +22,18 @@ redis = Redis(
 )
 
 
+class ShortenedUrlBaseError(Exception):
+    """
+    Base exception for shortened url CRUD actions.
+    """
+
+
+class ShortenedUrlAlreadyExists(ShortenedUrlBaseError):
+    """
+    Raise on shortened url creation if such slug already exists.
+    """
+
+
 class ShortenedUrlsStorage(BaseModel):
 
     def save_shortened_url(self, shortened_url: ShortenedUrl) -> None:
@@ -46,13 +58,27 @@ class ShortenedUrlsStorage(BaseModel):
             return ShortenedUrl.model_validate_json(data)
         return None
 
-    def create(self, shortened_url: ShortenedUrlCreate) -> ShortenedUrl:
+    def exists(self, slug: str) -> bool:
+        return redis.hexists(
+            name=config.REDIS_SHORTENED_URLS_HASH_NAME,
+            key=slug,
+        )
+
+    def create(self, shortened_url_in: ShortenedUrlCreate) -> ShortenedUrl:
         shortened_url = ShortenedUrl(
-            **shortened_url.model_dump(),
+            **shortened_url_in.model_dump(),
         )
         self.save_shortened_url(shortened_url)
         logger.info("Created shortened url %s", shortened_url)
         return shortened_url
+
+    def create_or_raise_if_exists(
+        self, shortened_url_in: ShortenedUrlCreate
+    ) -> ShortenedUrl:
+        if not self.exists(shortened_url_in.slug):
+            return self.create(shortened_url_in)
+
+        raise ShortenedUrlAlreadyExists(shortened_url_in.slug)
 
     def delete_by_slug(self, slug: str) -> None:
         redis.hdel(

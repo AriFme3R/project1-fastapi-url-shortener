@@ -14,7 +14,7 @@ from schemas.shortened_url import (
     ShortenedUrlRead,
 )
 
-from api.api_v1.shortened_urls.crud import storage
+from api.api_v1.shortened_urls.crud import storage, ShortenedUrlAlreadyExists
 
 router = APIRouter(
     prefix="/short_urls",
@@ -65,10 +65,11 @@ def read_short_urls_list() -> list[ShortenedUrl]:
 def create_shortened_url(
     shortened_url_create: ShortenedUrlCreate,
 ) -> ShortenedUrl:
-    if not storage.get_by_slug(shortened_url_create.slug):
-        return storage.create(shortened_url_create)
+    try:
+        return storage.create_or_raise_if_exists(shortened_url_create)
+    except ShortenedUrlAlreadyExists:
 
-    raise HTTPException(
-        status_code=status.HTTP_409_CONFLICT,
-        detail=f"Shortened URL with slug={shortened_url_create.slug!r} already exists",
-    )
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Shortened URL with slug={shortened_url_create.slug!r} already exists",
+        )
