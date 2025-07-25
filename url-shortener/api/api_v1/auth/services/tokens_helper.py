@@ -39,6 +39,19 @@ class AbstractTokensHelper(ABC):
         :return:
         """
 
+    @abstractmethod
+    def delete_token(
+        self,
+        token: str,
+    ) -> None:
+        """
+        Удаляет токен из хранилища.
+
+        Args:
+         token: str - Токен для удаления.
+        """
+        pass
+
     @classmethod
     def generate_token(cls) -> str:
         return secrets.token_urlsafe(16)
