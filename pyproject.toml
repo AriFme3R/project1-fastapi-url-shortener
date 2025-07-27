@@ -14,3 +14,6 @@ dependencies = [
 dev = [
     "mypy>=1.17.0",
 ]
+
+[tool.mypy]
+strict = true
