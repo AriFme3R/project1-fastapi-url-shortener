@@ -23,7 +23,9 @@ class RedisUsersHelper(AbstractUsersHelper):
         self,
         username: str,
     ) -> str | None:
-        return self.redis.get(username)
+        res = self.redis.get(username)
+        assert isinstance(res, str)
+        return res
 
 
 redis_users = RedisUsersHelper(

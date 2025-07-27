@@ -1,3 +1,5 @@
+__all__ = ("storage",)
+
 import logging
 
 from pydantic import BaseModel, ValidationError
@@ -59,9 +61,11 @@ class ShortenedUrlsStorage(BaseModel):
         return None
 
     def exists(self, slug: str) -> bool:
-        return redis.hexists(
-            name=config.REDIS_SHORTENED_URLS_HASH_NAME,
-            key=slug,
+        return bool(
+            redis.hexists(
+                name=config.REDIS_SHORTENED_URLS_HASH_NAME,
+                key=slug,
+            )
         )
 
     def create(self, shortened_url_in: ShortenedUrlCreate) -> ShortenedUrl:
