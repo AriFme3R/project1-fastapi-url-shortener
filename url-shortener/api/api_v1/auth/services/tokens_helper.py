@@ -50,7 +50,6 @@ class AbstractTokensHelper(ABC):
         Args:
          token: str - Токен для удаления.
         """
-        pass
 
     @classmethod
     def generate_token(cls) -> str:

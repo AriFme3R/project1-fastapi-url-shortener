@@ -1,3 +1,5 @@
+from typing import cast
+
 from redis import Redis
 
 from core import config
@@ -23,9 +25,10 @@ class RedisUsersHelper(AbstractUsersHelper):
         self,
         username: str,
     ) -> str | None:
-        res = self.redis.get(username)
-        assert isinstance(res, str)
-        return res
+        return cast(
+            str | None,
+            self.redis.get(username),
+        )
 
 
 redis_users = RedisUsersHelper(

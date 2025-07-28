@@ -38,7 +38,7 @@ def check(
 @app.command(name="list", help="Get tokens list")
 def list_tokens() -> None:
     print(Markdown("# Available API tokens"))
-    print(Markdown("\n- ".join([""] + tokens.get_tokens())))
+    print(Markdown("\n- ".join(["", *tokens.get_tokens()])))
     print()
 
 

@@ -5,7 +5,7 @@ from fastapi import (
     status,
 )
 
-from api.api_v1.shortened_urls.crud import ShortenedUrlAlreadyExists, storage
+from api.api_v1.shortened_urls.crud import ShortenedUrlAlreadyExistsError, storage
 from api.api_v1.shortened_urls.dependencies import (
     api_token_or_user_basic_auth_required_for_unsafe_methods,
 )
@@ -28,8 +28,8 @@ router = APIRouter(
                 "application/json": {
                     "example": {
                         "detail": "Invalid API token or basic auth.",
-                    }
-                }
+                    },
+                },
             },
         },
     },
@@ -55,8 +55,8 @@ def read_short_urls_list() -> list[ShortenedUrl]:
                 "application/json": {
                     "example": {
                         "detail": "Shortened URL with slug='name' already exists",
-                    }
-                }
+                    },
+                },
             },
         },
     },
@@ -66,9 +66,8 @@ def create_shortened_url(
 ) -> ShortenedUrl:
     try:
         return storage.create_or_raise_if_exists(shortened_url_create)
-    except ShortenedUrlAlreadyExists:
-
+    except ShortenedUrlAlreadyExistsError as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Shortened URL with slug={shortened_url_create.slug!r} already exists",
-        )
+        ) from e
