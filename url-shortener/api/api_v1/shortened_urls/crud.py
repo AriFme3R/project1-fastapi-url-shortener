@@ -2,16 +2,15 @@ __all__ = ("storage",)
 
 import logging
 
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 from redis import Redis
 
 from core import config
-from core.config import SHORTENED_URLS_STORAGE_FILEPATH
 from schemas.shortened_url import (
     ShortenedUrl,
     ShortenedUrlCreate,
-    ShortenedUrlUpdate,
     ShortenedUrlPartialUpdate,
+    ShortenedUrlUpdate,
 )
 
 logger = logging.getLogger(__name__)

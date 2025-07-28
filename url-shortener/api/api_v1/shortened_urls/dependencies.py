@@ -3,27 +3,24 @@ from typing import Annotated
 
 from fastapi import (
     HTTPException,
-    BackgroundTasks,
     Request,
     status,
 )
 from fastapi.params import Depends
-
 from fastapi.security import (
     HTTPAuthorizationCredentials,
-    HTTPBearer,
     HTTPBasic,
     HTTPBasicCredentials,
+    HTTPBearer,
 )
 
-from .crud import storage
 from api.api_v1.auth.services import (
     redis_tokens,
     redis_users,
 )
-
 from schemas.shortened_url import ShortenedUrl
 
+from .crud import storage
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +79,7 @@ def api_token_required_for_unsafe_methods(
         Depends(static_api_token),
     ] = None,
 ) -> None:
-    logger.info(f"API token: %s", api_token)
+    logger.info("API token: %s", api_token)
     if request.method not in UNSAFE_METHOD:
         return
 

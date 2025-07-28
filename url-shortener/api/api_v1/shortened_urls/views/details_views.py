@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, Depends
 from starlette import status
 
 from api.api_v1.shortened_urls.crud import storage
@@ -9,9 +9,9 @@ from api.api_v1.shortened_urls.dependencies import (
 )
 from schemas.shortened_url import (
     ShortenedUrl,
-    ShortenedUrlUpdate,
     ShortenedUrlPartialUpdate,
     ShortenedUrlRead,
+    ShortenedUrlUpdate,
 )
 
 router = APIRouter(
