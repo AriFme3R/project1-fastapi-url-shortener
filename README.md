@@ -14,7 +14,7 @@ pre-commit install
 ```
 
 ### Install:
-Install packeges:
+Install packages:
 ```shell
 uv install
 ```
