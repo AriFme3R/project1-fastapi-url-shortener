@@ -1,5 +1,7 @@
 from unittest import TestCase
 
+from pydantic import ValidationError
+
 from schemas.shortened_url import (
     ShortenedUrl,
     ShortenedUrlCreate,
@@ -44,3 +46,29 @@ class ShortenedUrlCreateTestCase(TestCase):
                         "/",
                     ),
                 )
+
+    def test_shortened_url_slug_too_short(self) -> None:
+        with self.assertRaises(expected_exception=ValidationError) as exc_info:
+            ShortenedUrlCreate(
+                slug="s",
+                description="some-description",
+                target_url="https://example.com",
+            )
+
+        error_details = exc_info.exception.errors()[0]
+        expected_type = "string_too_short"
+        self.assertEqual(
+            expected_type,
+            error_details["type"],
+        )
+
+    def test_shortened_url_slug_too_short_with_regex(self) -> None:
+        with self.assertRaisesRegex(
+            expected_exception=ValidationError,
+            expected_regex="String should have at least 3 characters",
+        ):
+            ShortenedUrlCreate(
+                slug="s",
+                description="some-description",
+                target_url="https://example.com",
+            )
