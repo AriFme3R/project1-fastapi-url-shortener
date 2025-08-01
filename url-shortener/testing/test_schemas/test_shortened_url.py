@@ -1,3 +1,4 @@
+from os import getenv
 from unittest import TestCase
 
 from pydantic import ValidationError
@@ -6,6 +7,11 @@ from schemas.shortened_url import (
     ShortenedUrl,
     ShortenedUrlCreate,
 )
+
+if getenv("TESTING") != "1":
+    raise OSError(  # noqa: TRY003
+        "Environment is not ready for testing.",  # noqa: EM101
+    )
 
 
 class ShortenedUrlCreateTestCase(TestCase):
